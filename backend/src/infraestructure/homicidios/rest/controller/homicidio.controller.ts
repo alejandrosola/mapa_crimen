@@ -4,6 +4,7 @@ import { FindHomicidios } from 'src/domain/homicidios/case/findHomicidios.case';
 import { HomicidioRestMapper } from '../mapper/homicidio.rest.mapper';
 import { HomicidioPayload } from '../payload/homicidio.payload';
 import { Homicidio as DomainHomicidio } from 'src/domain/homicidios/model/homicidio.entity';
+import { endOfDay, startOfDay } from 'src/util/dateHelpers';
 
 @Controller('homicidios')
 export class HomicidioController {
@@ -110,11 +111,8 @@ export class HomicidioController {
     @Query('start') start: string,
     @Query('end') end: string,
   ): Promise<ResponseData<HomicidioPayload[]>> {
-    const startDate = new Date(start);
-    startDate.setUTCHours(0, 0, 0, 0);
-
-    const endDate = new Date(end);
-    endDate.setUTCHours(23, 59, 59, 999);
+    const startDate = startOfDay(new Date(start));
+    const endDate = endOfDay(new Date(end));
 
     const someHomicidios: DomainHomicidio[] =
       await this.findHomicidios.findByFechaRango(startDate, endDate);
