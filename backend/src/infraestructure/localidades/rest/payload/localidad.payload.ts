@@ -4,5 +4,5 @@ export class LocalidadPayload {
   id: number;
   num: string;
   nombre: string;
-  departamento: DepartamentoPayload;
+  departamento: DepartamentoPayload | null;
 }

@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { IFindHomicidios } from '../port/IFindHomicidios';
 import { IHomicidioRepository } from '../port/IHomicidioRepository';
 import { Homicidio } from '../model/homicidio.entity';
+import { HomicidioFilters } from 'src/infraestructure/homicidios/rest/controller/homicidio.controller';
 
 @Injectable()
 export class FindHomicidios implements IFindHomicidios {
@@ -48,5 +49,9 @@ export class FindHomicidios implements IFindHomicidios {
 
   findByFechaRango(fechaInicio: Date, fechaFin: Date): Promise<Homicidio[]> {
     return this.homicidioRepository.findByFechaRango(fechaInicio, fechaFin);
+  }
+
+  findByFiltros(filters: HomicidioFilters): Promise<Homicidio[]> {
+    return this.homicidioRepository.findByFiltros(filters);
   }
 }

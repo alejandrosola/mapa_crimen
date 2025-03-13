@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
 import { HomicidioTypeORMMapper } from '../mapper/homicidio.typeorm.mapper';
 import { IHomicidioRepository } from 'src/domain/homicidios/port/IHomicidioRepository';
+import { HomicidioFilters } from '../../rest/controller/homicidio.controller';
 
 @Injectable()
 export class HomicidioRepository implements IHomicidioRepository {
@@ -14,6 +15,14 @@ export class HomicidioRepository implements IHomicidioRepository {
   ) {}
 
   relations = ['localidad.departamento.provincia', 'victimas', 'imputados'];
+
+  private getQueryBuilder() {
+    return this.homicidioRepository
+      .createQueryBuilder('homicidio')
+      .leftJoinAndSelect('homicidio.localidad', 'localidad')
+      .leftJoinAndSelect('localidad.departamento', 'departamento')
+      .leftJoinAndSelect('departamento.provincia', 'provincia');
+  }
 
   async findAll(): Promise<DomainHomicidio[]> {
     const someHomicidios = await this.homicidioRepository.find({
@@ -138,6 +147,55 @@ export class HomicidioRepository implements IHomicidioRepository {
       relations: this.relations,
       order: { fecha_hecho: 'ASC' },
     });
+
+    return someHomicidios.map((homicidio) =>
+      HomicidioTypeORMMapper.toDomain(homicidio),
+    );
+  }
+
+  async findByFiltros(filters: HomicidioFilters): Promise<DomainHomicidio[]> {
+    const query = this.getQueryBuilder();
+
+    if (filters.startDate) {
+      const adjustedStartDate = new Date(
+        filters.startDate.getTime() + 3 * 60 * 60 * 1000,
+      );
+      query.andWhere('homicidio.fecha_hecho >= :startDate', {
+        startDate: adjustedStartDate,
+      });
+    }
+
+    if (filters.endDate) {
+      const adjustedEndDate = new Date(
+        filters.endDate.getTime() + 3 * 60 * 60 * 1000,
+      );
+      query.andWhere('homicidio.fecha_hecho <= :endDate', {
+        endDate: adjustedEndDate,
+      });
+    }
+
+    if (filters.anio) {
+      query.andWhere('homicidio.anio = :anio', {
+        anio: filters.anio,
+      });
+    }
+    if (filters.localidad) {
+      query.andWhere('localidad.nombre = :localidad', {
+        localidad: filters.localidad,
+      });
+    }
+    if (filters.provincia) {
+      query.andWhere('provincia.nombre = :provincia', {
+        provincia: filters.provincia,
+      });
+    }
+    if (filters.claseArma) {
+      query.andWhere('homicidio.clase_arma = :claseArma', {
+        claseArma: filters.claseArma,
+      });
+    }
+
+    const someHomicidios = await query.getMany();
 
     return someHomicidios.map((homicidio) =>
       HomicidioTypeORMMapper.toDomain(homicidio),

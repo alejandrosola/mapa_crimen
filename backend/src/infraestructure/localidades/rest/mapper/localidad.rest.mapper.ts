@@ -8,7 +8,9 @@ export class LocalidadRestMapper {
       id: localidad.id,
       num: localidad.num,
       nombre: localidad.nombre,
-      departamento: DepartamentoRestMapper.toPayload(localidad.departamento),
+      departamento: localidad.departamento
+        ? DepartamentoRestMapper.toPayload(localidad.departamento)
+        : null,
     };
   }
 }

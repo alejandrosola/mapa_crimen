@@ -16,7 +16,9 @@ export class HomicidioRestMapper {
       hora_hecho: homicidio.hora_hecho,
       tipo_lugar: homicidio.tipo_lugar,
       clase_arma: homicidio.clase_arma,
-      localidad: LocalidadRestMapper.toPayload(homicidio.localidad),
+      localidad: homicidio.localidad
+        ? LocalidadRestMapper.toPayload(homicidio.localidad)
+        : null,
       victimas: homicidio.victimas?.map((victima) =>
         PersonaRestMapper.toPayload(victima),
       ),

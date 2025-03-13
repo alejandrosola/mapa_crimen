@@ -6,12 +6,24 @@ import { HomicidioPayload } from '../payload/homicidio.payload';
 import { Homicidio as DomainHomicidio } from 'src/domain/homicidios/model/homicidio.entity';
 import { endOfDay, startOfDay } from 'src/util/dateHelpers';
 
+export class HomicidioFilters {
+  start?: string;
+  end?: string;
+  anio?: number;
+  localidad?: string;
+  provincia?: string;
+  claseArma?: string;
+  startDate?: Date;
+  endDate?: Date;
+}
+
 @Controller('homicidios')
 export class HomicidioController {
   constructor(private readonly findHomicidios: FindHomicidios) {}
 
   @Get()
   async findAll(): Promise<ResponseData<HomicidioPayload[]>> {
+    console.log('PETICION');
     const someHomicidios: DomainHomicidio[] =
       await this.findHomicidios.findAll();
 
@@ -116,6 +128,53 @@ export class HomicidioController {
 
     const someHomicidios: DomainHomicidio[] =
       await this.findHomicidios.findByFechaRango(startDate, endDate);
+
+    return responseJson(
+      200,
+      `${someHomicidios.length} Homicidios recuperados con éxito`,
+      someHomicidios.map((homicidio) =>
+        HomicidioRestMapper.toPayload(homicidio),
+      ),
+    );
+  }
+
+  @Get('/filter')
+  async findByFiltros(
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+    @Query('anio') anio?: number,
+    @Query('localidad') localidad?: string,
+    @Query('provincia') provincia?: string,
+    @Query('claseArma') claseArma?: string,
+  ): Promise<ResponseData<HomicidioPayload[]>> {
+    const filters: Partial<HomicidioFilters> = {};
+
+    if (startDate) {
+      filters.startDate = startOfDay(new Date(startDate));
+    }
+
+    if (endDate) {
+      filters.endDate = endOfDay(new Date(endDate));
+    }
+
+    if (anio && anio != 0) {
+      filters.anio = anio;
+    }
+
+    if (localidad && localidad != '') {
+      filters.localidad = localidad;
+    }
+
+    if (provincia && provincia != '') {
+      filters.provincia = provincia;
+    }
+
+    if (claseArma && claseArma != '') {
+      filters.claseArma = claseArma;
+    }
+
+    const someHomicidios: DomainHomicidio[] =
+      await this.findHomicidios.findByFiltros(filters);
 
     return responseJson(
       200,

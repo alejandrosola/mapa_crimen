@@ -12,7 +12,7 @@ export class HomicidioPayload {
   hora_hecho: string;
   tipo_lugar: string;
   clase_arma: string;
-  localidad: LocalidadPayload;
+  localidad: LocalidadPayload | null;
   victimas: PersonaPayload[];
   imputados: PersonaPayload[];
 }
