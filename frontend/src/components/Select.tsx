@@ -60,7 +60,7 @@ export default function Select({
             "& .MuiSelect-select": { color: colors[color] },
             "& .MuiSelect-icon": { color: colors[color] },
           }}
-          onChange={(e) => onSelect(e.target.value)}
+          onChange={(e) => e.target.value !== null && onSelect(e.target.value)}
         >
           {options.map((option, index) => (
             <MenuItem key={index} value={option}>

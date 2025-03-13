@@ -1,8 +1,7 @@
-import type { Metadata } from "next";
+import MainLayout from "@/components/MainLayout";
 import "./globals.css";
-import NavBar from "@/components/NavBar";
-import { Box } from "@mui/material";
 import "ol/ol.css";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,27 +13,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const drawerWidth = 300;
-
   return (
     <html lang="en">
       <body>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { sm: `${drawerWidth}px 1fr` },
-            height: "100vh",
-          }}
-        >
-          <Box
-            component="nav"
-            sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-            aria-label="mailbox folders"
-          >
-            <NavBar drawerWidth={drawerWidth} />
-          </Box>
-          <Box className="principal-container">{children}</Box>
-        </Box>
+        <MainLayout> {children}</MainLayout>
       </body>
     </html>
   );

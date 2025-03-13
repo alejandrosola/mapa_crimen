@@ -19,7 +19,6 @@ export default function FilterForm() {
     setIsMounted(true);
     setAnio(filters.anio ?? 2023);
     setClaseArma(filters.claseArma ?? "");
-    console.log(filters);
   }, [filters]);
 
   if (!isMounted) return null;

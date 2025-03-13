@@ -13,18 +13,24 @@ import { Feature } from "ol";
 import useMapFilters from "../../hooks/useFilters";
 import { findFilteredHomicidios } from "@/features/homicidios/hooks/useFindFilteredHomicidios";
 import { Homicidio } from "@/features/homicidios/homicidio";
+import { Backdrop, CircularProgress } from "@mui/material";
 
 function HeatmapMap() {
   const [someHomicidios, setSomeHomicidios] = useState<Homicidio[]>([]);
   const [points, setPoints] = useState<Array<[number, number]>>([]);
   const { filters } = useMapFilters();
+  const [isLoading, setIsLoading] = useState(true);
 
   const ready = useRef(false);
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
+      console.log("Fetching data...");
       const result = await findFilteredHomicidios(filters);
       setSomeHomicidios(result.data);
+      console.log("Done!");
+      setIsLoading(false);
     };
 
     fetchData();
@@ -78,7 +84,19 @@ function HeatmapMap() {
     return () => map.setTarget(null!);
   }, [points]);
 
-  return <div className="h-screen w-screen" id="heatmap-container" />;
+  return (
+    <>
+      <Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+
+      {/* Heatmap */}
+      <div className="h-screen w-screen" id="heatmap-container"></div>
+    </>
+  );
 }
 
 export default HeatmapMap;
