@@ -34,6 +34,12 @@ body {
 .main_navbar {
   background-color: var(--primary-color) !important;
   height: 100vh;
+  z-index: 1000;
+}
+
+.mobile_navbar {
+  background-color: var(--primary-color) !important;
+  position: fixed;
 }
 
 .light-text {

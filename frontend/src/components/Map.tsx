@@ -13,13 +13,20 @@ import { Feature } from "ol";
 import useMapFilters from "../../hooks/useFilters";
 import { findFilteredHomicidios } from "@/features/homicidios/hooks/useFindFilteredHomicidios";
 import { Homicidio } from "@/features/homicidios/homicidio";
-import { Backdrop, CircularProgress } from "@mui/material";
+import {
+  Backdrop,
+  CircularProgress,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 
 function HeatmapMap() {
   const [someHomicidios, setSomeHomicidios] = useState<Homicidio[]>([]);
   const [points, setPoints] = useState<Array<[number, number]>>([]);
   const { filters } = useMapFilters();
   const [isLoading, setIsLoading] = useState(true);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const ready = useRef(false);
 
@@ -71,18 +78,24 @@ function HeatmapMap() {
       weight: () => 1,
     });
 
+    const lat = isMobile ? -62.9044758 : -52.9044758;
+
+    const lng = isMobile ? -38.4863576 : -38.4863576;
+
+    const zoom = isMobile ? 4 : 5;
+
     // Crea el mapa
     const map = new OlMap({
       target: "heatmap-container",
       layers: [osmLayer, heatmapLayer],
       view: new View({
-        center: fromLonLat([-52.9044758, -38.4863576]),
-        zoom: 5,
+        center: fromLonLat([lat, lng]),
+        zoom: zoom,
       }),
     });
 
     return () => map.setTarget(null!);
-  }, [points]);
+  }, [points, isMobile]);
 
   return (
     <>
