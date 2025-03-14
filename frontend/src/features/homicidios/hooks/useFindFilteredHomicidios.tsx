@@ -4,7 +4,7 @@ import { MapFilters } from "../../../../hooks/useFilters";
 export const findFilteredHomicidios = async (filters: Partial<MapFilters>) => {
   try {
     const response = await axios.get(
-      `http://localhost:3000/homicidios/filter`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/homicidios/filter`,
       {
         params: filters,
       }
